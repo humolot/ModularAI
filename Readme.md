@@ -1,7 +1,8 @@
 # Modular AI Kit - Complete User Manual
 
-**Version 1.0 | Unity 2021.3 LTS or Higher | GBX Studios**
+**Version 2.0 | Unity 2021.3 LTS or Higher | GBX Studios**
 
+![ModularAI Editor](https://gbxstudios.xyz/ModularAI/Img/main.png)
 ---
 
 ## Table of Contents
