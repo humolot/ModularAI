@@ -785,5 +785,400 @@ public class CustomAIController : MonoBehaviour
     }
 }
 ```
+---
+## 🎯 AdvancedEnemySpawner API
 
+### Properties
+```csharp
+bool IsSpawning { get; }              // Is spawner currently active
+bool IsPaused { get; }                // Is spawner paused
+int CurrentEnemyCount { get; }        // Number of active enemies
+int MaxEnemies { get; }               // Maximum enemy limit
+bool CanSpawnMore { get; }            // Can spawn more enemies
+float SpawnProgress { get; }          // Progress (0-1) towards max enemies
+int CurrentWave { get; }              // Current wave number
+bool IsWaveActive { get; }            // Is wave system active
+float SessionTime { get; }            // Time since spawner started
+```
+
+### Basic Controls
+```csharp
+// Core Spawner Control
+void StartSpawning()                  // Start the spawning system
+void StopSpawning()                   // Stop spawning completely
+void PauseSpawning()                  // Pause spawning temporarily
+void ResumeSpawning()                 // Resume paused spawning
+
+// Manual Spawning
+void SpawnEnemyManually(string enemyTypeName)           // Spawn specific enemy type
+void SpawnEnemyAtPoint(string enemyTypeName, int index) // Spawn at specific point
+void ClearAllEnemies()                                  // Remove all spawned enemies
+```
+
+### Wave System
+```csharp
+// Wave Control
+void StartNextWave()                  // Start next wave manually
+void RestartWaves()                   // Restart wave system from beginning
+void SetDifficulty(float multiplier) // Set global difficulty multiplier (affects all waves)
+```
+
+### Configuration
+```csharp
+// Spawn Points
+void AddSpawnPoint(Transform point, bool isElite = false, bool isBoss = false)
+void RemoveSpawnPoint(Transform point)
+
+// Player Reference
+void SetPlayerReference(Transform player)
+```
+
+### Statistics & Information
+```csharp
+// Statistics
+Dictionary<string, int> GetSpawnStatistics()    // Get spawn count per enemy type
+List<GameObject> GetActiveEnemies()             // Get list of all active enemies
+int GetEnemyCount(string enemyTypeName)         // Count of specific enemy type
+float GetSpawnRate()                            // Enemies spawned per second
+void ResetStatistics()                          // Reset all statistics
+```
+
+### Example Usage
+```csharp
+// Basic setup and control
+AdvancedEnemySpawner spawner = GetComponent<AdvancedEnemySpawner>();
+spawner.StartSpawning();
+spawner.SetDifficulty(1.5f);
+
+// Manual spawning
+spawner.SpawnEnemyManually("Basic Enemy");
+spawner.SpawnEnemyManually("Elite Soldier");
+
+// Wave control
+if (!spawner.IsWaveActive)
+    spawner.StartNextWave();
+
+// Emergency controls
+if (spawner.CurrentEnemyCount > 50)
+    spawner.ClearAllEnemies();
+
+// Statistics
+var stats = spawner.GetSpawnStatistics();
+Debug.Log($"Basic Enemies spawned: {stats["Basic Enemy"]}");
+```
+
+---
+
+## 🎛️ AdvancedTriggerSystem API
+
+### Properties
+```csharp
+bool IsActive { get; }                // Can trigger activate
+bool HasObjectsInTrigger { get; }     // Are there objects in trigger
+int ObjectCount { get; }              // Number of objects in trigger
+float CooldownRemaining { get; }      // Time left on cooldown
+```
+
+### Trigger Controls
+```csharp
+// Manual Control
+void ResetTrigger()                   // Reset trigger state and usage count
+void ForceTrigger()                   // Force trigger activation
+void SetCooldown(float cooldownTime)  // Change cooldown duration
+
+// Tag Management
+void AddAllowedTag(string tag)        // Add allowed tag to filter
+void RemoveAllowedTag(string tag)     // Remove tag from filter
+
+// Configuration
+void SetTriggerMode(TriggerMode mode) // Change trigger mode
+void SetMaxUses(int maxUses)          // Set usage limit
+void EnableAudio(bool enable)         // Enable/disable audio
+void EnableAnimation(bool enable)     // Enable/disable animations
+void SetActivationKey(KeyCode key)    // Change activation key
+void SetDebugMode(bool enable)        // Enable/disable debug logs
+```
+
+### Object Queries
+```csharp
+// Object Information
+void ClearObjectsInTrigger()          // Clear all tracked objects
+List<GameObject> GetObjectsInTrigger() // Get all objects in trigger
+bool HasObjectWithTag(string tag)     // Check if specific tag present
+GameObject GetFirstObjectWithTag(string tag) // Get first object with tag
+int GetObjectCountWithTag(string tag) // Count objects with specific tag
+```
+
+### Save/Load System
+```csharp
+// Persistence
+TriggerSaveData GetSaveData()         // Get save data
+void LoadSaveData(TriggerSaveData data) // Load save data
+```
+
+### Example Usage
+```csharp
+AdvancedTriggerSystem trigger = GetComponent<AdvancedTriggerSystem>();
+
+// Setup
+trigger.AddAllowedTag("Player");
+trigger.AddAllowedTag("NPC");
+trigger.SetMaxUses(5);
+
+// Runtime control
+if (trigger.HasObjectWithTag("Player"))
+{
+    trigger.ForceTrigger();
+}
+
+// Configuration changes
+trigger.SetActivationKey(KeyCode.F);
+trigger.SetCooldown(10f);
+```
+
+---
+
+## 🔫 AIRangedCombat API
+
+### Properties
+```csharp
+bool CanFire { get; }                 // Can weapon fire right now
+bool HasAmmo { get; }                 // Has ammunition remaining
+float AmmoPercentage { get; }         // Ammo as percentage (0-1)
+bool IsInRange { get; }               // Target is in weapon range
+bool HasLineOfSight { get; }          // Clear line of sight to target
+Transform CurrentTarget { get; }      // Current target reference
+```
+
+### Combat Control
+```csharp
+// Weapon Control
+bool CanPerformRangedAttack()         // Check if can attack now
+void ForceReload()                    // Force weapon reload
+void SetAmmo(int ammo)                // Set current ammunition
+int GetCurrentAmmo()                  // Get current ammo count
+bool IsReloading()                    // Is weapon currently reloading
+
+// Target Management
+bool IsTargetInRange(Transform target)    // Check if target in range
+bool CheckLineOfSight(Transform target)   // Check line of sight to target
+void ApplyDamage(Transform target, float damage, Vector3 hitPoint, Vector3 hitNormal)
+```
+
+### Weapon Configuration
+```csharp
+// Configuration
+float GetFireInterval()               // Get time between shots
+```
+
+### Example Usage
+```csharp
+AIRangedCombat rangedCombat = GetComponent<AIRangedCombat>();
+
+// Combat checks
+if (rangedCombat.CanPerformRangedAttack() && rangedCombat.HasLineOfSight)
+{
+    // AI will attack automatically through events
+}
+
+// Ammo management
+if (rangedCombat.AmmoPercentage < 0.2f)
+{
+    rangedCombat.ForceReload();
+}
+
+// Manual ammo control
+rangedCombat.SetAmmo(30);
+```
+
+---
+
+## 🛡️ CoverPoint API
+
+### Properties
+```csharp
+bool IsAvailable { get; }             // Can accept new occupants
+bool IsOccupied { get; }              // Has any occupants
+bool IsFull { get; }                  // At maximum capacity
+bool IsCompromised { get; }           // Is cover compromised by threats
+int OccupantCount { get; }            // Number of current occupants
+float EffectiveProtection { get; }    // Protection value (0-1)
+Vector3 CoverPosition { get; }        // Optimal cover position
+```
+
+### Occupancy Management
+```csharp
+// Cover Control
+bool CanAcceptOccupant(GameObject requester)     // Check if can accept occupant
+bool RequestCover(GameObject requester)           // Request to use cover
+void ReleaseCover(GameObject occupant)            // Release cover usage
+void ForceClearOccupants()                       // Force clear all occupants
+
+// Information
+Vector3 GetOptimalCoverPosition()                 // Get best position for cover
+float GetDistanceFrom(Vector3 position)           // Distance from position
+bool IsOccupiedBy(GameObject occupant)            // Check if specific occupant
+List<GameObject> GetCurrentOccupants()           // Get all current occupants
+```
+
+### Example Usage
+```csharp
+CoverPoint coverPoint = GetComponent<CoverPoint>();
+
+// Request cover
+if (coverPoint.CanAcceptOccupant(gameObject))
+{
+    if (coverPoint.RequestCover(gameObject))
+    {
+        Vector3 coverPos = coverPoint.GetOptimalCoverPosition();
+        transform.position = coverPos;
+    }
+}
+
+// Release when safe
+if (healthSystem.HealthPercentage > 80f)
+{
+    coverPoint.ReleaseCover(gameObject);
+}
+```
+
+---
+
+## 🏃 CoverSystemIntegration API
+
+### Properties
+```csharp
+bool IsInCover { get; }               // Currently in cover
+bool IsSeekingCover { get; }          // Moving to cover
+bool HasValidCover { get; }           // Has valid cover point
+float TimeInCover { get; }            // Time spent in current cover
+```
+
+### Cover Control
+```csharp
+// Cover Management
+bool TrySeekCover()                   // Try to find and move to cover
+void ForceLeaveCover()                // Force leave current cover
+void ForceSeekCover()                 // Force seek cover immediately
+
+// Information
+CoverPoint GetCurrentCover()          // Get current cover point
+float GetCoverProtection()            // Get protection value (0-1)
+bool IsInEffectiveCover()             // In cover with good protection
+
+// Configuration
+void SetCoverSystemEnabled(bool enabled) // Enable/disable cover system
+```
+
+### Example Usage
+```csharp
+CoverSystemIntegration coverSystem = GetComponent<CoverSystemIntegration>();
+
+// Automatic cover seeking
+if (underFire && !coverSystem.IsInCover)
+{
+    coverSystem.TrySeekCover();
+}
+
+// Manual control
+if (coverSystem.IsInCover && safe)
+{
+    coverSystem.ForceLeaveCover();
+}
+
+// Status checking
+if (coverSystem.IsInEffectiveCover())
+{
+    Debug.Log($"Protection: {coverSystem.GetCoverProtection():P0}");
+}
+```
+
+---
+
+## 🌐 CoverManager API (Static)
+
+### Cover Point Management
+```csharp
+// Registration (automatic)
+static void RegisterCoverPoint(CoverPoint coverPoint)     // Register cover point
+static void UnregisterCoverPoint(CoverPoint coverPoint)   // Unregister cover point
+
+// Search Functions
+static CoverPoint FindNearestAvailableCover(Vector3 position, float maxDistance = 20f)
+static List<CoverPoint> FindAllAvailableCoversInRange(Vector3 position, float maxDistance = 20f)
+static CoverPoint FindBestCoverFromThreat(Vector3 position, Vector3 threatPosition, float maxDistance = 20f)
+
+// Statistics
+static int GetTotalCoverPoints()      // Total registered cover points
+static int GetAvailableCoverPoints()  // Available cover points
+```
+
+### Example Usage
+```csharp
+// Find cover
+CoverPoint nearestCover = CoverManager.FindNearestAvailableCover(transform.position);
+if (nearestCover != null)
+{
+    nearestCover.RequestCover(gameObject);
+}
+
+// Find cover from specific threat
+CoverPoint safeCover = CoverManager.FindBestCoverFromThreat(
+    transform.position, 
+    threatPosition, 
+    20f
+);
+
+// Statistics
+Debug.Log($"Available covers: {CoverManager.GetAvailableCoverPoints()}");
+```
+
+---
+
+## 🎮 Common Integration Patterns
+
+### Basic AI Setup
+```csharp
+// Get all AI components
+AICore aiCore = GetComponent<AICore>();
+AIFleeHealthSystem health = GetComponent<AIFleeHealthSystem>();
+AIRangedCombat ranged = GetComponent<AIRangedCombat>();
+CoverSystemIntegration cover = GetComponent<CoverSystemIntegration>();
+
+// Setup AI behavior
+health.SetFleeThreshold(30f);
+cover.SetCoverSystemEnabled(true);
+```
+
+### Combat Management
+```csharp
+// Check AI state and control accordingly
+if (health.ShouldFlee && !cover.IsInCover)
+{
+    cover.TrySeekCover();
+}
+else if (ranged.CanPerformRangedAttack())
+{
+    // Combat handled automatically
+}
+```
+
+### Spawner Integration
+```csharp
+// Setup spawner with AI systems
+spawner.StartSpawning();
+spawner.SetDifficulty(1.2f);
+
+// Monitor spawned enemies
+var enemies = spawner.GetActiveEnemies();
+foreach(var enemy in enemies)
+{
+    var health = enemy.GetComponent<AIFleeHealthSystem>();
+    if (health != null && health.HealthPercentage < 20f)
+    {
+        // Low health enemy detected
+    }
+}
+```
+---
 This comprehensive API documentation covers all the major systems and their public interfaces, providing developers with everything they need to effectively use and extend the Modular AI Kit.
